@@ -71,7 +71,8 @@ class main_listener implements EventSubscriberInterface
 	{
 		return array(
 			'core.user_setup'						=> 'load_language_on_setup',
-			'core.memberlist_view_profile'			=> 'advanced_profile_system'
+			'core.memberlist_view_profile'			=> 'advanced_profile_system',
+			'core.ucp_profile_modify_profile_info'	=> 'ucp_profile_modify_profile_info'
 			);
 	}
 
@@ -304,7 +305,7 @@ class main_listener implements EventSubscriberInterface
 				
 				$msg_deleted_redirect = append_sid("{$this->phpbb_root_path}memberlist.{$this->phpEx}", "mode=viewprofile&amp;u=". $user_id ."#wall");
 				$message = $this->user->lang['CONFIRM_WALL_DEL'] . '<br /><br />' . sprintf($this->user->lang['RETURN_WALL'], '<a href="' . $msg_deleted_redirect . '">', $username, '</a>');
-				meta_refresh(32, $msg_deleted_redirect);
+				meta_refresh(3, $msg_deleted_redirect);
 				trigger_error($message);
 			}
 			else 
@@ -338,5 +339,34 @@ class main_listener implements EventSubscriberInterface
 			'S_POST_WALL' 			=> $post_wall_action,
 		));
 
-	}			
+	}
+
+	public function ucp_profile_modify_profile_info($event)
+	{
+		$data = $event['data'];
+		$submit = $event['submit'];
+		
+		if ($submit)
+		{
+			$coverphoto = request_var('coverphoto', '');
+			
+			if (!preg_match('#^' . get_preg_expression('url') . '$#iu', $coverphoto))
+			{
+				$coverphoto_error_redirect = append_sid("{$this->phpbb_root_path}ucp.{$this->phpEx}", "i=ucp_profile&amp;mode=profile_info");
+				$message = $this->user->lang['NOT_VALID_URL'] . '<br /><br />' . sprintf($this->user->lang['RETURN_PROFILE_INFO'], '<a href="' . $coverphoto_error_redirect . '">', '</a>');
+				trigger_error($message);
+			}
+			else
+			{			
+				$update_cover_photo = 'UPDATE ' . USERS_TABLE . '
+										SET user_coverphoto = "' . $this->db->sql_escape($coverphoto) . '"
+										WHERE user_id = ' . $this->user->data['user_id'];
+				$this->db->sql_query($update_cover_photo);
+			}
+		}
+			
+		$this->template->assign_vars(array(
+				'COVERPHOTO'			=> $this->user->data['user_coverphoto'],
+		));
+	}	
 }
