@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # phpBB 3.1 Extension - Advanced Profile System
 
 ## Description
@@ -8,12 +7,7 @@ Adds several options to a user's profile:
 	- Friends List
 	- Profile Views
 	- Total Topics
-=======
-# phpBB 3.1 Extension - Advanced Profile System
-
-## Description
-Something awesome..
->>>>>>> eb35578a1ffbddf4ca88da1ca8df0d91a376220d
+	- Coverphoto
 
 ## Installation
 
