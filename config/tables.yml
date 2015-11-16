@@ -1,0 +1,2 @@
+parameters:
+    posey.aps.tables.wall: %core.table_prefix%wall

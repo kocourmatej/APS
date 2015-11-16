@@ -1,0 +1,18 @@
+imports:
+    - { resource: tables.yml }
+services:
+    posey.aps.listener:
+        class: posey\aps\event\main_listener
+        arguments:
+            - @config
+            - @controller.helper
+            - @template
+            - @dbal.conn
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+            - @auth
+            - @request
+            - %posey.aps.tables.wall%
+        tags:
+            - { name: event.listener }

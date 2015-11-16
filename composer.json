@@ -1,0 +1,27 @@
+{
+	"name": "posey/aps",
+	"type": "phpbb-extension",
+	"description": "Advanced Profile System",
+	"homepage": "http://www.godfathertalks.com",
+	"version": "0.1.0",
+	"time": "2015-11-10",
+	"license": "GPL-2.0",
+	"authors": [{
+			"name": "Gijs Martens",
+			"email": "admin@godfathertalks.com",
+			"homepage": "http://www.godfathertalks.com",
+			"role": "Lead Developer"
+		}],
+	"require": {
+		"php": ">=5.3.3"
+	},
+	"require-dev": {
+		"phpbb/epv": "dev-master"
+	},
+	"extra": {
+		"display-name": "Advanced Profile System",
+		"soft-require": {
+			"phpbb/phpbb": ">=3.1.0-RC2,<3.2.*@dev"
+		}
+	}
+}
