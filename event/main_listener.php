@@ -95,8 +95,8 @@ class main_listener implements EventSubscriberInterface
 		/****************
 		* PROFILE VIEWS *
 		****************/
-		//	Make sure we have a session				Make sure user is not a bot.	 Do not increase view count if viewing own profile.
-		if (isset($this->user->data['session_page']) && !$this->user->data['is_bot'] && ($this->user->data['user_id'] !== $user_id))
+		//	Make sure we have a session			Make sure user is not a bot.	 Do not increase view count if viewing own profile.
+		if (isset($this->user->data['session_page']) && !$this->user->data['is_bot'] && ($this->user->data['user_id'] != $user_id))
 		{
 			$incr_profile_views = 'UPDATE ' . USERS_TABLE . '
 									SET user_profile_views = user_profile_views + 1
