@@ -26,8 +26,10 @@ $lang = array_merge($lang, array(
 	'FIRST_POST_WALL'		=> 'Be the first to post on %s\'s wall!', // %s will be replaced by username
 	'USER_NO_FRIENDS'		=> 'No friends yet',
 	'USER_NO_POSTS'			=> '%s hasn\'t made any posts yet..', // %s will be replaced by username
+	'NOT_VALID_URL'			=> 'You\'ve entered an invalid url for the coverphoto.',
 	
 	'CONFIRM_WALL_DEL'		=> 'The wall post has successfully been deleted.',
 	'CONFIRM_WALL_EXPLAIN'	=> 'Are you sure you want to delete this wall post?',
 	'RETURN_WALL'			=> '%sReturn to %s\'s wall%s', // %s will be replaced by <a> tags and username
+	'RETURN_PROFILE_INFO'	=> '%sReturn to UCP: Edit profile%s' // %s will be replaced by <a> tags
 ));
