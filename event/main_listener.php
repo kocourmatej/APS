@@ -205,8 +205,26 @@ class main_listener implements EventSubscriberInterface
 
 		while ($friend_row = $this->db->sql_fetchrow($friend_result))
 		{
+			$img = phpbb_get_user_avatar($friend_row); // Use phpBB's Built in Avatar creator, for all types
+			$has_avatar = false;
+			
+			if($img == '')
+			{
+				$has_avatar = false; // This friend has no avatar..
+			}
+			else 
+			{
+				$has_avatar = true; // This friend has an avatar
+				$offset = 25; //Start off the img src
+				$end = strpos($img, '"', $offset); // Find end of img src
+				$length = $end - $offset; // Determine src length
+				$friend_avatar = substr($img, $offset, $length); // Grab just the src
+			}
+			
 			$this->template->assign_block_vars('friends', array(
-				'USERNAME'	=> get_username_string('full', $friend_row['user_id'], $friend_row['username'], $friend_row['user_colour'])
+				'USERNAME'		=> get_username_string('full', $friend_row['user_id'], $friend_row['username'], $friend_row['user_colour']),
+				'AVATAR'		=> $friend_avatar,
+				'HAS_AVATAR'	=> $has_avatar,
 			));
 		}
 		$this->db->sql_freeresult($friend_result); // Master gave Dobby a sock, now Dobby is free!

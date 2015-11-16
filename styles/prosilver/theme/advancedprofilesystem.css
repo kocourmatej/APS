@@ -37,11 +37,12 @@
 }
 
 #friends li {
-	background-image: url("./images/friends_icon.gif");
 	background-repeat: no-repeat;
-	background-position: center left; 
+	background-position: center left;
+	background-size: 16px 16px;
 	display: block;
 	padding: 2px 0 2px 19px;
+	margin-bottom: 3px;
 	font-weight: bold;
 }
 

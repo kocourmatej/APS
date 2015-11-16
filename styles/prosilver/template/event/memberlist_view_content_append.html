@@ -65,7 +65,7 @@
 				<!-- ENDIF -->
 				<!-- BEGIN friends -->
 					<!-- IF friends.S_FIRST_ROW --><ul><!-- ENDIF -->
-					<li>{friends.USERNAME}</li>
+					<li style="background-image: url('<!-- IF friends.HAS_AVATAR -->{friends.AVATAR}<!-- ELSE -->{T_THEME_PATH}/images/icon_profile.gif<!-- ENDIF -->');">{friends.ABC} {friends.USERNAME}</li>
 					<!-- IF friends.S_LAST_ROW --></ul><!-- ENDIF -->
 				<!-- BEGINELSE -->
 					{L_USER_NO_FRIENDS}
