@@ -1,5 +1,13 @@
 <?php
 
+/**
+*
+* @package phpBB Extension - Advanced Profile System
+* @copyright (c) 2015 posey - http://www.godfathertalks.com
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
+
 namespace posey\aps\migrations;
 
 class release_1_0 extends \phpbb\db\migration\migration

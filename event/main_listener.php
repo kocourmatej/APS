@@ -1,8 +1,9 @@
 <?php
+
 /**
 *
-* @package Advanced Profile System
-* @copyright (c) 2015 posey
+* @package phpBB Extension - Advanced Profile System
+* @copyright (c) 2015 posey - http://www.godfathertalks.com
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
