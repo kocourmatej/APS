@@ -352,6 +352,7 @@ class main_listener implements EventSubscriberInterface
 			'PROFILE_VIEWS'			=> $member['user_profile_views'],
 			'NO_WALL_POSTS'			=> sprintf($this->user->lang['FIRST_POST_WALL'], '<strong>' . $username .'</strong>'),
 			'USER_NO_POSTS'			=> sprintf($this->user->lang['USER_NO_POSTS'], '<strong>' . $username .'</strong>'),
+			'COVERPHOTO'			=> $member['user_coverphoto'],
 			
 			'U_SEARCH_USER_TOPICS'	=> $total_topics_url,
 			

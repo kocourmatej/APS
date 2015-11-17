@@ -3,12 +3,14 @@
 	
 		<div id="wall" class="column1">
 			<h2><a name="wall">{L_WALL}</a></h2>
-			<form id="sendwall" action="{S_POST_WALL}" method="post">
-				<textarea name="msg_text" rows="4"></textarea>
-				<input name="sendwall" type="hidden" />
-				{S_FORM_TOKEN}
-				<p class="sub-wall-msg"><input type="submit" value="{L_SUBMIT}" /></p>
-			</form>
+			<!-- IF S_REGISTERED_USER -->
+				<form id="sendwall" action="{S_POST_WALL}" method="post">
+					<textarea name="msg_text" rows="4"></textarea>
+					<input name="sendwall" type="hidden" />
+					{S_FORM_TOKEN}
+					<p class="sub-wall-msg"><input type="submit" value="{L_SUBMIT}" /></p>
+				</form>
+			<!-- ENDIF -->
 			<div>
 				<!-- BEGIN wall -->
 					<form id="deletewall" method="post">
