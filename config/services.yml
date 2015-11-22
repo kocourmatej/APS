@@ -14,5 +14,27 @@ services:
             - @auth
             - @request
             - %posey.aps.tables.wall%
+            - @notification_manager
+            - @service_container
         tags:
             - { name: event.listener }
+
+    posey.aps.notification.type.wall:
+        class: posey\aps\notification\wall
+        scope: prototype 
+        scope: prototype # scope MUST be prototype for this to work!
+        arguments:
+            - @user_loader
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @config
+            - @controller.helper
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.notification_types%
+            - %tables.notifications%
+            - %tables.user_notifications%
+        tags:
+            - { name: notification.type }

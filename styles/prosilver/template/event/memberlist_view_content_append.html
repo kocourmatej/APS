@@ -1,9 +1,8 @@
-<div id="APS" class="panel bg2">
-	<div class="inner">
-	
-		<div id="wall" class="column1">
-			<h2><a name="wall">{L_WALL}</a></h2>
-			<!-- IF S_REGISTERED_USER -->
+<!-- IF S_CAN_READ_WALL -->
+	<div id="wall" class="panel bg2 column1  <!-- IF AF_ENABLED -->wall<!-- ELSEIF FL_ENABLED -->wall3qt<!-- ELSE -->wallfull<!-- ENDIF -->">
+		<div class="inner">
+			<h2><a name="wall"></a>{L_WALL}</h2>
+			<!-- IF S_REGISTERED_USER and S_CAN_POST_WALL -->
 				<form id="sendwall" action="{S_POST_WALL}" method="post">
 					<textarea name="msg_text" rows="4"></textarea>
 					<input name="sendwall" type="hidden" />
@@ -16,17 +15,19 @@
 					<form id="deletewall" method="post">
 						<div class="panel <!-- IF wall.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg3<!-- ENDIF -->">
 							<div class="inner">
-								<div class="wall-avatar"><!-- IF wall.POSTER_AVATAR -->{wall.POSTER_AVATAR}<!-- ENDIF --></div>
+								<div class="wall-profile">
+									<!-- IF wall.POSTER_AVATAR -->{wall.POSTER_AVATAR}<!-- ELSE --><img src="./ext/posey/aps/styles/prosilver/theme/images/no_avatar.gif" alt="" /><!-- ENDIF -->
+									<p>{wall.POSTER}</p>
+								</div>
 								<div class="wall-message">
-									<h3>
-										{wall.POSTER} <span class="topic_time">{L_AT} {wall.MSG_TIME}</span>
-										<!-- IF U_EDIT_SELF -->
-											<input class="del-wall-msg" type="submit" name="deletewall" value="x"/>
-										<!-- ENDIF -->
-									</h3>
+									<!-- IF (U_EDIT_SELF and S_CAN_DEL_WALL) or S_MOD_DEL_WALL -->
+										<input type="hidden" type="submit" name="deletewall" />
+										<input class="del-wall-msg" type="image" src="./ext/posey/aps/styles/prosilver/theme/images/remove_icon.gif" />
+									<!-- ENDIF -->
+									<span class="posted_on">{wall.MSG_TIME}</span><br />&nbsp;
 									<p>{wall.MSG}</p>
 								</div>
-								<input type="hidden" name="deletewallid" value="{wall.MSG_ID}" />
+								<input type="hidden" name="deletewallid" value="{wall.ID}" />
 							</div>
 						</div>
 					</form>
@@ -35,45 +36,50 @@
 				<!-- END wall -->
 			</div>
 		</div>
-		
-		<div class="column2">
-			<div id="activityfeed">
-				<h2>{L_ACTIVITY_FEED}</h2>
-				<!-- BEGIN af -->
-					<span class="topic_title"><a href="{af.URL}" alt="{af.SUBJECT">{af.SUBJECT}</a></span><br />
-					<span class="topic_time">{L_AT} {af.TIME}</span>
-					<p>{af.TEXT}</p>
-					<!-- IF not af.S_LAST_ROW --><hr class="dashed" /><!-- ENDIF -->
-				<!-- BEGINELSE -->
-					{USER_NO_POSTS}
-				<!-- END af -->
-			</div>
-			<div id="friends">
-				<h2>{L_FRIENDS}</h2>
-				<!-- IF S_USER_LOGGED_IN and S_ZEBRA -->
-					<!-- IF U_REMOVE_FRIEND -->
-						<span><a href="{U_REMOVE_FRIEND}" class="remove-friend" data-ajax="zebra"><strong>{L_REMOVE_FRIEND}</strong></a></span>
-					<!-- ELSEIF U_REMOVE_FOE -->
-						<span><a href="{U_REMOVE_FOE}" class="remove-friend" data-ajax="zebra"><strong>{L_REMOVE_FOE}</strong></a></span>
-					<!-- ELSE -->
-						<!-- IF U_ADD_FRIEND -->
-							<span><a href="{U_ADD_FRIEND}" data-ajax="zebra"><strong>{L_ADD_FRIEND}</strong></a></span>
-						<!-- ENDIF -->
-						<!-- IF U_ADD_FOE -->
-							<span><!-- IF U_ADD_FRIEND -->&nbsp;<!-- ENDIF --><a href="{U_ADD_FOE}" <!-- IF not U_ADD_FRIEND -->class="add-friend"<!-- ENDIF --> data-ajax="zebra"><strong>{L_ADD_FOE}</strong></a></span>
-						<!-- ENDIF -->
-					<!-- ENDIF -->
-					<hr class="dashed" />
-				<!-- ENDIF -->
-				<!-- BEGIN friends -->
-					<!-- IF friends.S_FIRST_ROW --><ul><!-- ENDIF -->
-					<li style="background-image: url('<!-- IF friends.HAS_AVATAR -->{friends.AVATAR}<!-- ELSE -->{T_THEME_PATH}/images/icon_profile.gif<!-- ENDIF -->');">{friends.USERNAME}</li>
-					<!-- IF friends.S_LAST_ROW --></ul><!-- ENDIF -->
-				<!-- BEGINELSE -->
-					{L_USER_NO_FRIENDS}
-				<!-- END friends -->
-			</div>
-		</div>
-		
 	</div>
-</div>
+<!-- ENDIF -->
+
+<!-- IF FL_ENABLED -->
+	<div id="friends" class="panel bg3 friendslist">
+		<div class="inner">
+			<h2>{L_FRIENDS}</h2>
+			<!-- IF S_USER_LOGGED_IN and S_ZEBRA -->
+				<!-- IF U_REMOVE_FRIEND -->
+					<span><a href="{U_REMOVE_FRIEND}" class="remove-friend" data-ajax="zebra"><strong>{L_REMOVE_FRIEND}</strong></a></span>
+				<!-- ELSEIF U_REMOVE_FOE -->
+					<span><a href="{U_REMOVE_FOE}" class="remove-friend" data-ajax="zebra"><strong>{L_REMOVE_FOE}</strong></a></span>
+				<!-- ELSE -->
+					<!-- IF U_ADD_FRIEND -->
+						<span><a href="{U_ADD_FRIEND}" data-ajax="zebra"><strong>{L_ADD_FRIEND}</strong></a></span>
+					<!-- ENDIF -->
+					<!-- IF U_ADD_FOE -->
+						<span><!-- IF U_ADD_FRIEND -->&nbsp;<!-- ENDIF --><a href="{U_ADD_FOE}" <!-- IF not U_ADD_FRIEND -->class="add-friend"<!-- ENDIF --> data-ajax="zebra"><strong>{L_ADD_FOE}</strong></a></span>
+					<!-- ENDIF -->
+				<!-- ENDIF -->
+				<hr class="dashed" />
+			<!-- ENDIF -->
+			<!-- BEGIN friends -->
+				<!-- IF friends.S_FIRST_ROW --><ul><!-- ENDIF -->
+				<li style="background-image: url('<!-- IF friends.HAS_AVATAR -->{friends.AVATAR}<!-- ELSE -->{T_THEME_PATH}/images/icon_profile.gif<!-- ENDIF -->');">{friends.USERNAME}</li>
+				<!-- IF friends.S_LAST_ROW --></ul><!-- ENDIF -->
+			<!-- BEGINELSE -->
+				{L_USER_NO_FRIENDS}
+			<!-- END friends -->
+		</div>
+	</div>
+<!-- ENDIF -->
+	
+<!-- IF AF_ENABLED -->
+	<div id="activityfeed" class="panel bg2  <!-- IF FL_ENABLED and S_CAN_READ_WALL -->activityfeed<!-- ELSEIF S_CAN_READ_WALL -->activityfeedfull<!-- ELSE -->activityfulltotal<!-- ENDIF -->">
+		<div class="inner">
+			<h2>{L_ACTIVITY_FEED}</h2>
+			<!-- BEGIN af -->
+				<span class="topic_title"><a href="{af.URL}" alt="{af.SUBJECT">{af.SUBJECT}</a></span><br />
+				<span class="posted_on">{L_AT} {af.TIME}</span>
+				<p <!-- IF not af.S_LAST_ROW -->class="af-msg"<!-- ENDIF -->>{af.TEXT}</p>
+			<!-- BEGINELSE -->
+				{USER_NO_POSTS}
+			<!-- END af -->
+		</div>
+	</div>
+<!-- ENDIF -->

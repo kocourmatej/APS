@@ -1,32 +1,62 @@
 /* Advanced Profile System
 ---------------------------------------- */
 
-#APS .topic_title {
+#activityfeed .topic_title {
 	font-weight: bold;
 	font-size: 1.5em;
 }
 
-#APS .topic_time {
+.posted_on {
 	font-style: italic;
 	font-size: 0.9em;
 }
 
-#APS textarea {
+#wall textarea {
 	width: 100%;
 	resize: none;
 	overflow: auto;
 }
 
-#activityfeed {
+.wall {
 	float: left;
-	clear: left;
-	width: 74%;
+	width: 49%;
+	margin: 0;
+	padding: 1em;
 }
 
-#friends {
+.wallfull {
+	float: none;
+	width: inherit;
+}
+
+.wall3qt {
+	float: left;
+	width: 85%;
+}
+
+.activityfeed {
+	margin-left: 51%;
+	width: 34%;
+	padding: 1em;
+}
+
+.activityfeedfull {
 	float: right;
-	clear: right;
-	width: 24%;
+	margin: 0;
+	width: 47%;
+	padding: 1em;
+}
+
+.activityfeedtotal {
+	float: none;
+	width: inherit;
+}
+
+.friendslist {
+	float: right;
+	width: 11%;
+	margin: 0;
+	padding: 1em;
 }
 
 
@@ -53,6 +83,12 @@
 	padding: 2px 0 2px 15px;
 }
 
+.af-msg {
+    border: none;
+	padding-bottom: 15px;
+    border-bottom: 2px dashed #D3D3D3;
+}
+
 .sub-wall-msg {
 	text-align: right;
 }
@@ -60,10 +96,10 @@
 .del-wall-msg {
 	position: relative;
 	float: right;
-	margin: -3px 10px;
+	margin: 0;
 }
 
-.wall-avatar {
+.wall-profile {
 	display: inline;
 	margin: 2px 0 0 0;
 	min-height: 80px;
@@ -74,7 +110,7 @@
 	overflow: hidden;
 }
 
-.wall-avatar img {
+.wall-profile img {
 	display: block;
 	margin-right: 2px !important;
 	height: auto !important;
@@ -89,21 +125,6 @@
 	position: relative;
 }
 
-#coverphoto {
-	background-repeat: no-repeat;
-	background-size: 100%;
-	background-color: #ECF3F7;
-	border-radius: 7px;
-	max-width: 100%;
-	min-height: 100px;
-	overflow: hidden;
-	margin-bottom: 4px;
-}
-
-#coverphoto .bg1 {
-	background-color: transparent;
-}
-
 #coverphoto .profile-avatar {
 	border: 4px solid white;
 	border-top-width: 0;
@@ -112,12 +133,4 @@
 	border-bottom-right-radius: 5px;
 	margin-top: -5px;
 
-}
-
-#coverphoto .left-box {
-	color: white;
-}
-
-#coverphoto dt {
-	color: white;
 }

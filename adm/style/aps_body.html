@@ -1,0 +1,34 @@
+<!-- INCLUDE overall_header.html -->
+
+<h1>{L_ACP_SETTINGS}</h1>
+
+<form id="acp_board" method="post" action="{U_ACTION}">
+	<fieldset>
+		<dl>
+			<dt><label for="cp_enabled">{L_ACP_ENABLE_CP}</label></dt>
+			<dd><input type="radio" class="radio" name="cp_enabled" value="1" <!-- IF CP_ENABLED -->checked="checked"<!-- ENDIF -->/> {L_YES} &nbsp;
+				<input type="radio" class="radio" name="cp_enabled" value="0" <!-- IF not CP_ENABLED -->checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+		</dl>
+		<dl>
+			<dt><label for="af_enabled">{L_ACP_ENABLE_AF}</label></dt>
+			<dd><input type="radio" class="radio" name="af_enabled" value="1" <!-- IF AF_ENABLED -->checked="checked"<!-- ENDIF -->/> {L_YES} &nbsp;
+				<input type="radio" class="radio" name="af_enabled" value="0" <!-- IF not AF_ENABLED -->checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+		</dl>
+		<dl>
+			<dt><label for="fl_enabled">{L_ACP_ENABLE_FL}</label></dt>
+			<dd><input type="radio" class="radio" name="fl_enabled" value="1" <!-- IF FL_ENABLED -->checked="checked"<!-- ENDIF -->/> {L_YES} &nbsp;
+				<input type="radio" class="radio" name="fl_enabled" value="0" <!-- IF not FL_ENABLED -->checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+		</dl>
+		<dl>
+			<dt><label for="cp_panel_id">{L_ACP_CP_PANEL_ID}</label><br />{L_ACP_CP_PANEL_ID_EXPL}</dt>
+			<dd><input type="number" min="1" required="required" size="3" step="1" name="cp_panel_id" value="{CP_PANEL_ID}" /></dd>
+
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+			<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		</p>
+
+		{S_FORM_TOKEN}
+	</fieldset>
+</form>
+<!-- INCLUDE overall_footer.html -->

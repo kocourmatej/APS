@@ -7,17 +7,19 @@
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+
 namespace posey\aps\event;
+
 /**
 * @ignore
 */
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
 /**
 * Event listener
 */
 class main_listener implements EventSubscriberInterface
 {
-	
 	/** @var \phpbb\config\config */
 	protected $config;
 	/** @var \phpbb\controller\helper */
@@ -38,6 +40,10 @@ class main_listener implements EventSubscriberInterface
 	protected $request;
 	/** @var string */
 	protected $wall_table;
+	/** @var \phpbb\notification\manager */
+	protected $notification_manager;
+	/** @var ContainerInterface */
+	protected $container;
 	
 	/**
 	* Constructor
@@ -54,9 +60,9 @@ class main_listener implements EventSubscriberInterface
 	* @param string								$wall_table			Wall Table
 	*/
 	
-	public function __construct(\phpbb\config\config $config, \phpbb\controller\helper $controller_helper, \phpbb\template\template $template, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $phpEx, \phpbb\auth\auth $auth, \phpbb\request\request $request, $wall_table)
+	public function __construct(\phpbb\config\config $config, \phpbb\controller\helper $controller_helper, \phpbb\template\template $template, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $phpEx, \phpbb\auth\auth $auth, \phpbb\request\request $request, $wall_table, \phpbb\notification\manager $notification_manager, $container)
 	{
-        $this->config				= $config;
+		$this->config				= $config;
 		$this->controller_helper 	= $controller_helper;
         $this->template 			= $template;
 		$this->db 					= $db;
@@ -66,6 +72,8 @@ class main_listener implements EventSubscriberInterface
 		$this->auth 				= $auth;
 		$this->request 				= $request;
 		$this->wall_table			= $wall_table;
+		$this->notification_manager = $notification_manager;
+		$this->container			= $container;
 	}
 	
 	static public function getSubscribedEvents()
@@ -92,6 +100,51 @@ class main_listener implements EventSubscriberInterface
 		$member = $event['member']; 
 		$user_id = (int) $member['user_id'];  // Get user_id of user we are viewing
 		$username = $member['username'];
+		
+		
+		$user_extra_rank_data = array(
+			'title'		=> null,
+			'img'		=> null,
+			'img_src'	=> null,
+		);
+			
+		$ranks_sql = 'SELECT *
+				FROM '. RANKS_TABLE .'
+				WHERE rank_special != 1';
+		$normal_ranks = $this->db->sql_query($ranks_sql);
+
+		$spec_sql = 'SELECT rank_special 
+					FROM '. RANKS_TABLE .'
+					WHERE rank_id = '. $member['user_rank'];
+		$special = $this->db->sql_query($spec_sql);
+
+		if ($special !== 1)
+		{
+			if ($member['user_posts'] !== false)
+			{
+				if (!empty($normal_ranks))
+				{
+					foreach ($normal_ranks as $rank)
+					{
+						if ($member['user_posts'] >= $rank['rank_min'])
+						{
+							$user_extra_rank_data['title'] = $rank['rank_title'];
+							$user_extra_rank_data['img_src'] = (!empty($rank['rank_image'])) ? $this->phpbb_root_path . $this->config['ranks_path'] . '/' . $rank['rank_image'] : '';
+							$user_extra_rank_data['img'] = (!empty($rank['rank_image'])) ? '<img src="' . $user_extra_rank_data['img_src'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		$this->template->assign_vars(array(
+			'EXTRA_RANK_TITLE'		=> $user_extra_rank_data['title'],
+			'EXTRA_RANK_IMG'		=> $user_extra_rank_data['img'],
+		));	
+		
+		
+		
 		
 		/****************
 		* PROFILE VIEWS *
@@ -153,6 +206,8 @@ class main_listener implements EventSubscriberInterface
 			// Set a max length for the post to display 
 			$cutoff = ' …';
 			$text = ((strlen($text)) > 200) ? (mb_substr($text, 0, 200) . $cutoff) : $text;
+			
+			// See if user is able to view posts..
 			
 			$this->template->assign_block_vars('af', array(
 				'SUBJECT'		=> $af_row['post_subject'],
@@ -239,7 +294,7 @@ class main_listener implements EventSubscriberInterface
 		
 		if($sendwall)
 		{
-			if(check_form_key('postwall'))
+			if(check_form_key('postwall') && $this->auth->acl_get('u_wall_post'))
 			{
 				$msg_text = $this->request->variable('msg_text', '', true);
 				$uid = $bitfield = $options = ''; // will be modified by generate_text_for_storage
@@ -258,8 +313,26 @@ class main_listener implements EventSubscriberInterface
 				);
 
 				$insertwall = 'INSERT INTO ' . $this->wall_table . ' ' . $this->db->sql_build_array('INSERT', $wall_ary);
-								
 				$this->db->sql_query($insertwall);
+				
+				if ($user_id != $this->user->data['user_id'])
+				{
+					$msg_id = (int) $this->db->sql_nextid();
+					$poster_name = get_username_string('no_profile', $this->user->data['user_id'], $this->user->data['username'], $this->user->data['user_colour']);
+					$notification_msg = $msg_text;
+					strip_bbcode($notification_msg, $uid);
+					
+					
+					$wall_notification_data = array(
+						'msg_id'			=> $msg_id,
+						'user_id'			=> $user_id,
+						'poster_name'		=> $poster_name,
+						'notification_msg'	=> (strlen($notification_msg) > 30) ? substr($notification_msg,0,30).'...' : $notification_msg,
+					);
+
+					$phpbb_notifications = $this->container->get('notification_manager');
+					$phpbb_notifications->add_notifications('posey.aps.notification.type.wall', $wall_notification_data);
+				}
 			}
 			else
 			{
@@ -284,7 +357,7 @@ class main_listener implements EventSubscriberInterface
 
 				'WHERE'		=> 'w.user_id = ' . $user_id,
 
-				'ORDER_BY'	=> 'w.msg_id DESC',
+				'ORDER_BY'	=> 'w.id DESC',
 		);
 		
 		$getwall = $this->db->sql_build_query('SELECT_DISTINCT', $getwall_ary);
@@ -293,17 +366,17 @@ class main_listener implements EventSubscriberInterface
 		while ($wall = $this->db->sql_fetchrow($wallresult))
 		{
 			$wall_msg = generate_text_for_display($wall['msg'], $wall['bbcode_uid'], $wall['bbcode_bitfield'], $wall['bbcode_options']); // Parse wall message text
-			$msg_id = $wall['msg_id'];
+			$msg_id = $wall['id'];
 			$msg_time = $this->user->format_date($wall['msg_time']);
 			
 			$this->template->assign_block_vars('wall', array(
 				'MSG'				=> $wall_msg, 
-				'MSG_ID'			=> $wall['msg_id'],
+				'ID'				=> $wall['id'],
 				'MSG_TIME'			=> $msg_time,
 				'POSTER'			=> get_username_string('full', $wall['poster_id'], $wall['username'], $wall['user_colour']),
 				'POSTER_AVATAR'		=> phpbb_get_user_avatar($wall),
 				'S_HIDDEN_FIELDS'	=> build_hidden_fields(array(
-										'deletewallid'		=> $wall['msg_id'],
+										'deletewallid'		=> $wall['id'],
 										)),
 			));
 		}
@@ -318,7 +391,7 @@ class main_listener implements EventSubscriberInterface
 			{
 				$deletewallid = request_var('deletewallid', 0);
 				$delete_msg = 'DELETE FROM '. $this->wall_table .'
-								WHERE msg_id = '. $deletewallid;
+								WHERE id = '. $deletewallid;
 				
 				$this->db->sql_query($delete_msg);
 				
@@ -331,7 +404,7 @@ class main_listener implements EventSubscriberInterface
 			{
 				$s_hidden_fields = build_hidden_fields(array(
 					'deletewall'		=> true,
-					'deletewallid' 	=> request_var('deletewallid', 0),
+					'deletewallid' 		=> request_var('deletewallid', 0),
 				));
 					
 				confirm_box(false, $this->user->lang['CONFIRM_WALL_DEL_EXPLAIN'], $s_hidden_fields);
@@ -353,10 +426,18 @@ class main_listener implements EventSubscriberInterface
 			'NO_WALL_POSTS'			=> sprintf($this->user->lang['FIRST_POST_WALL'], '<strong>' . $username .'</strong>'),
 			'USER_NO_POSTS'			=> sprintf($this->user->lang['USER_NO_POSTS'], '<strong>' . $username .'</strong>'),
 			'COVERPHOTO'			=> $member['user_coverphoto'],
+			'CP_PANEL_ID'			=> $this->config['cp_panel_id'] ? $this->config['cp_panel_id'] : 1,
+			'FL_ENABLED'			=> $this->config['fl_enabled'] ? true : false,
+			'CP_ENABLED'			=> $this->config['cp_enabled'] ? true : false,
+			'AF_ENABLED'			=> $this->config['af_enabled'] ? true : false,
 			
 			'U_SEARCH_USER_TOPICS'	=> $total_topics_url,
 			
 			'S_POST_WALL' 			=> $post_wall_action,
+			'S_CAN_POST_WALL'		=> $this->auth->acl_get('u_wall_post') ? true : false,
+			'S_CAN_READ_WALL'		=> $this->auth->acl_get('u_wall_read') ? true : false,
+			'S_CAN_DEL_WALL'		=> $this->auth->acl_get('u_wall_del') ? true : false,
+			'S_MOD_DEL_WALL'		=> $this->auth->acl_get('m_wall_del') ? true : false,
 		));
 
 	}
@@ -366,14 +447,16 @@ class main_listener implements EventSubscriberInterface
 		$data = $event['data'];
 		$submit = $event['submit'];
 		
-		if ($submit)
+		$coverphoto_enabled = $this->config['cp_enabled'] ? true : false;
+		
+		if ($coverphoto_enabled && $submit)
 		{
 			$coverphoto = request_var('coverphoto', '');
 			
-			if (!preg_match('#^' . get_preg_expression('url') . '$#iu', $coverphoto))
+			if (!preg_match('#^(http|https|ftp)://(?:(.*?\.)*?[a-z0-9\-]+?\.[a-z]{2,4}|(?:\d{1,3}\.){3,5}\d{1,3}):?([0-9]*?).*?\.(png|gif|jpg|jpeg)$#i', $coverphoto))
 			{
 				$coverphoto_error_redirect = append_sid("{$this->phpbb_root_path}ucp.{$this->phpEx}", "i=ucp_profile&amp;mode=profile_info");
-				$message = $this->user->lang['NOT_VALID_URL'] . '<br /><br />' . sprintf($this->user->lang['RETURN_PROFILE_INFO'], '<a href="' . $coverphoto_error_redirect . '">', '</a>');
+				$message = $this->user->lang['COVERPHOTO_INVALID_URL'] . '<br /><br />' . sprintf($this->user->lang['RETURN_PROFILE_INFO'], '<a href="' . $coverphoto_error_redirect . '">', '</a>');
 				trigger_error($message);
 			}
 			else
@@ -387,6 +470,7 @@ class main_listener implements EventSubscriberInterface
 			
 		$this->template->assign_vars(array(
 				'COVERPHOTO'			=> $this->user->data['user_coverphoto'],
+				'CP_ENABLED'			=> $coverphoto_enabled,
 		));
 	}	
 }

@@ -1,4 +1,21 @@
 <!-- Start a new div for COVERPHOTO -->
-<!-- IF COVERPHOTO -->
-	<div id="coverphoto" style="background-image: url('{COVERPHOTO}');">
+<!-- IF CP_ENABLED and COVERPHOTO -->
+	<style>
+		#coverphoto .panel:nth-of-type({CP_PANEL_ID}) {
+			background-image: url('{COVERPHOTO}');
+			background-repeat: no-repeat;
+			background-size: 100% 100%;
+			max-width: 100%;
+			min-height: 100px;
+			overflow: hidden;
+			margin-bottom: 4px;
+			color: white;
+		}
+
+		#coverphoto .panel:nth-of-type({CP_PANEL_ID}) dt {
+			color: white;
+		}
+	</style>
+
+	<div id="coverphoto">
 <!-- ENDIF -->
