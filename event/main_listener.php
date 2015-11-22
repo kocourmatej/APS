@@ -357,7 +357,7 @@ class main_listener implements EventSubscriberInterface
 
 				'WHERE'		=> 'w.user_id = ' . $user_id,
 
-				'ORDER_BY'	=> 'w.id DESC',
+				'ORDER_BY'	=> 'w.msg_id DESC',
 		);
 		
 		$getwall = $this->db->sql_build_query('SELECT_DISTINCT', $getwall_ary);
@@ -366,17 +366,17 @@ class main_listener implements EventSubscriberInterface
 		while ($wall = $this->db->sql_fetchrow($wallresult))
 		{
 			$wall_msg = generate_text_for_display($wall['msg'], $wall['bbcode_uid'], $wall['bbcode_bitfield'], $wall['bbcode_options']); // Parse wall message text
-			$msg_id = $wall['id'];
+			$msg_id = $wall['msg_id'];
 			$msg_time = $this->user->format_date($wall['msg_time']);
 			
 			$this->template->assign_block_vars('wall', array(
 				'MSG'				=> $wall_msg, 
-				'ID'				=> $wall['id'],
+				'ID'				=> $wall['msg_id'],
 				'MSG_TIME'			=> $msg_time,
 				'POSTER'			=> get_username_string('full', $wall['poster_id'], $wall['username'], $wall['user_colour']),
 				'POSTER_AVATAR'		=> phpbb_get_user_avatar($wall),
 				'S_HIDDEN_FIELDS'	=> build_hidden_fields(array(
-										'deletewallid'		=> $wall['id'],
+										'deletewallid'		=> $wall['msg_id'],
 										)),
 			));
 		}
@@ -391,7 +391,7 @@ class main_listener implements EventSubscriberInterface
 			{
 				$deletewallid = request_var('deletewallid', 0);
 				$delete_msg = 'DELETE FROM '. $this->wall_table .'
-								WHERE id = '. $deletewallid;
+								WHERE msg_id = '. $deletewallid;
 				
 				$this->db->sql_query($delete_msg);
 				
