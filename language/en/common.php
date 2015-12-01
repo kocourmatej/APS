@@ -25,6 +25,7 @@ $lang = array_merge($lang, array(
 
 	'AT'					=> 'at', // example: User1 posted "at" Tuesday 10 Nov.
 	'COVERPHOTO'			=> 'Cover photo',
+	'COVERPHOTO_EXPLAIN'            => 'Enter URL of your cover photo.',
 	'COVERPHOTO_INVALID_URL' => 'You\'ve entered an invalid url for your cover photo',
 	'FIRST_POST_WALL'		=> 'Be the first to post on %s\'s wall!', // %s will be replaced by username
 	'NOT_VALID_URL'			=> 'You\'ve entered an invalid url for the cover photo.',
