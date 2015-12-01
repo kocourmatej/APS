@@ -441,7 +441,9 @@ class main_listener implements EventSubscriberInterface
 		));
 
 	}
-
+                /****************************
+		* COVER PHOTO *
+		****************************/
 	public function ucp_profile_modify_profile_info($event)
 	{
 		$data = $event['data'];
